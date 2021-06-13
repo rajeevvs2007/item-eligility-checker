@@ -24,7 +24,7 @@ public class InMemoryCache implements ApplicationCache {
     ApplicationConfig applicationConfig;
 
     /**
-     *
+     * Create  cache key & value
      * @param key - cache key
      * @param val - value as object
      * @param ttl - time to live in milliseconds
@@ -41,6 +41,11 @@ public class InMemoryCache implements ApplicationCache {
     }
 
 
+    /**
+     * Fetch object from cache
+     * @param key
+     * @return
+     */
     public Object get(String key){
 
         if (key == null){
@@ -55,7 +60,7 @@ public class InMemoryCache implements ApplicationCache {
             LocalDateTime cacheTS = cachItem.getTimeToLive();
 
             if(cacheTS.isAfter(currentTS)) {
-                return cachItem;
+                return cachItem.getVal();
             } else {
                 cache.remove(key);
             }
@@ -65,11 +70,11 @@ public class InMemoryCache implements ApplicationCache {
     }
 
     /**
-     *
+     * Remove key from cache
      * @param key
      */
     public void remove(String key){
-
+        cache.remove(key);
     }
 
     private Object createCacheItem(String key, Object obj, long ttl) {

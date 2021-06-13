@@ -32,15 +32,25 @@
         </rollingPolicy>
     </appender>
 
+    <appender name="ASYNC_FILE"
+              class="ch.qos.logback.classic.AsyncAppender">
+        <discardingThreshold>0</discardingThreshold>
+        <appender-ref ref="RollingFile" />
+        <queueSize>200</queueSize>
+        <includeCallerData>false</includeCallerData>
+        <neverBlock>false</neverBlock><!-- default false, set to true to cause
+            the Appender not block the application and just drop the messages -->
+    </appender>
+
     <!-- LOG everything at INFO level -->
     <root level="info">
-        <appender-ref ref="RollingFile" />
+        <appender-ref ref="ASYNC_FILE" />
         <appender-ref ref="Console" />
     </root>
 
     <!-- LOG "com.shipping*" at INFO level -->
     <logger name="com.shipping" level="info" additivity="false">
-        <appender-ref ref="RollingFile" />
+        <appender-ref ref="ASYNC_FILE" />
         <appender-ref ref="Console" />
     </logger>
 

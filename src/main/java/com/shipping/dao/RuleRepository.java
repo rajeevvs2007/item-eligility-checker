@@ -1,0 +1,13 @@
+package com.shipping.dao;
+
+import com.shipping.model.RuleDefinition;
+import org.springframework.data.repository.CrudRepository;
+
+import java.util.List;
+
+
+public interface RuleRepository extends CrudRepository<RuleDefinition,Long> {
+
+    public List<RuleDefinition> findByKey(String key);
+
+}
