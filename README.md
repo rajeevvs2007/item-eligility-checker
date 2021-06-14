@@ -50,8 +50,18 @@ Demonstrates a RESTful web service using Spring Boot and Java. This webservice p
 
 ## Design
 
+
+
 ### High Level component design
 ![High Level design](https://user-images.githubusercontent.com/9518659/121853750-28700700-cca6-11eb-86be-c80587df23e9.jpg)
+
+### Assumptions
+1. Presence of distributed cloud computing components like Load balancers, API gateway and deployment orchestrator like kubernetes or openshift.
+2. Eligibility APIs are exposed to internal microservices and not exposed over the internet.
+3. Endpoint versioning done at the API gateway.
+4. At any point, no of active rules will not exceed 100.
+5. Packaged rules and eligibility APIs in a single container but it can be split if needed.
+6. Eligibilty service expects a high TPS and API gateway can enfore a rate limiter to prevent any accidental overload of the compute instance.
 
 ### Storage Requirements
 
@@ -189,4 +199,53 @@ curl -X GET \
   -H 'Content-Type: application/json'
  ```
  
+#### Monitoring Service 
+
+Spring boot actuator module provides an elegant way to monitor and manage your application when you push it to production.We make use of 3 key APIs exposed over HTTP to monitor the health of the application and gain insights on few key metrics like jvm memory usgae, cpu usgage, active jvm threads,http request,container threads,database connection pools etc.This information can be fed to  container orchestration tools like K8s to understand and react to the results like for eg if the if health check fails , K8s will not send any traffic to that instance.
+
+1. API : GET manage/health
+
+Payload :
+```
+curl -X GET \
+  http://localhost:8081/manage/health
+  
+```
+Response : 
+
+```
+{
+    "status": "UP"
+}
+```
+2. API : GET manage/metrics
+
+Payload : 
+```
+curl -X GET \
+  http://localhost:8081/manage/metrics
+  
+```
+
+
+#### Unit testing
+
+Added ```spring-boot-starter-test``` dependency to facilitate the unit test cases, key libraries used are ```MockMVC``` and ```Mockito```. 
+
+#### Performance considerations
+
+Application needs to be optimized for read-intensive workloads, and below considerations are incorporated
+1. Uses Inmemory caching for frequently accessed data , rules in this scenario are frequently looked up and less frequently modified.
+3. Uses HikariCP as a JDBC connection pool and correct setting of max pool ,idle pool and timeout will reduce ```getConnection()``` overheads.
+4. Uses Logback Async appenders for logging without blocking the main thread.
+5. Uses API key and JWT authenticaton mechanism which are light weight compared to OAUTH.
+6. Nice to have , we know the business rules wont change frequently and once the rule is evaluated for an item, we can instruct gateway to cache the response(use HTTP cache headers).Any change in rule should trigger a cache purge.
+
+
+
+##References
+
+1. https://docs.spring.io
+2. https://github.com/brettwooldridge/HikariCP
+
 
