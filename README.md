@@ -243,7 +243,7 @@ Application needs to be optimized for read-intensive workloads, and below consid
 
 
 
-##References
+## References
 
 1. https://docs.spring.io
 2. https://github.com/brettwooldridge/HikariCP
