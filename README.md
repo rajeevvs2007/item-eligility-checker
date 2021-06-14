@@ -53,7 +53,8 @@ Demonstrates a RESTful web service using Spring Boot and Java. This webservice p
 
 
 ### High Level component design
-![High level component design ](https://user-images.githubusercontent.com/9518659/121952139-b41e7d80-cd10-11eb-8ec0-eb24206081d3.jpg)
+![Untitled drawing (2)](https://user-images.githubusercontent.com/9518659/121957681-96084b80-cd17-11eb-9ec9-9bb829f6f39a.jpg)
+
 
 
 ### Assumptions
