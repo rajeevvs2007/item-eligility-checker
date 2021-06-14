@@ -53,7 +53,8 @@ Demonstrates a RESTful web service using Spring Boot and Java. This webservice p
 
 
 ### High Level component design
-![High Level design](https://user-images.githubusercontent.com/9518659/121853750-28700700-cca6-11eb-86be-c80587df23e9.jpg)
+![High level component design ](https://user-images.githubusercontent.com/9518659/121952139-b41e7d80-cd10-11eb-8ec0-eb24206081d3.jpg)
+
 
 ### Assumptions
 1. Presence of distributed cloud computing components like Load balancers, API gateway and deployment orchestrator like kubernetes or openshift.
