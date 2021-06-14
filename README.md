@@ -47,3 +47,146 @@ Demonstrates a RESTful web service using Spring Boot and Java. This webservice p
 | `GET` | `http://localhost:8081/manage/env` | Exposes properties from Spring’s ConfigurableEnvironment.| <ul><li>`200 OK` </li></ul> |
 | `GET` | `http://localhost:8081/manage/metrics` | Shows ‘metrics’ information for the current application.| <ul><li>`200 OK`</li></ul> |
 
+
+## Design
+
+### High Level component design
+![High Level design](https://user-images.githubusercontent.com/9518659/121853750-28700700-cca6-11eb-86be-c80587df23e9.jpg)
+
+### Storage Requirements
+
+We can use an inmemory datastore like H2 and when we move to production we can use persistant stores like  MySQL or Redis.
+
+Database - RuleDB
+
+Tables 
+
+1. RuleDefinition
+      | Column        | Data type |Primary key           | Unique Key |
+      | ------------- |-------------|-----| ----|
+      | ID            |BIGINT NOT NULL|Yes|Yes|
+      | key| VARCHAR(255)|No|Yes|
+      | value|VARCHAR(255)|No|No|
+
+
+### Deep dive
+
+#### Item Eligibilty Service 
+
+This is the key component of the app, service evaluates the payload based on the preconfigured rules. At present the preconfigured rules are 
+
+1.shipping.program.approved.sellers - Define a list of approved sellers.
+2.shipping.program.approved.categories - Define a list of approved categories.
+3.shipping.program.approved.price - A minimum qualified price.
+
+The rules will be first looked up in the cache and if not present will be going to database , an inmemory cache and an inmemory H2 database is used to achieve this design.In production we need to replace the database with persistant databases like MySQL,Mongo etc but the cache can still be JVM based as we are not expecting a huge set of rules created.
+Since this service is consumed by other microservices, the authentication can be based on API-KEYs as it will make the process faster still securing access. A custom http filter is defined to intercept the request and perform the token validation and if valid, mark the request as authenticated, this in conjunction with a custom ```WebSecurityConfigurerAdapter``` will instruct spring security to inject the filter before the default ```UsernamePasswordAuthenticationFilter```.
+
+API : v1/shipping/item/eligible
+
+Usage :  
+``` 
+curl -X POST \
+  http://localhost:8080/v1/shipping/item/eligible \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyYWplZXYiLCJleHAiOjE2MjM2MjE2NjksImlhdCI6MTYyMzYwMzY2OX0.QaeSWTfDbgDjjOcXnIIm5do8CutKmBgNssM5xqwxWy80yJ06_EKaclkmQ3NejJC3_SXGdTM1fR6EYxF7o1dyGw' \
+  -H 'Content-Type: application/json' \
+  -H 'Postman-Token: d6f79200-55c3-4b8e-951d-7b7b6a7f3265' \
+  -H 'X-API-KEY: aec093c2-c981-44f9-9a4a-365ad1d2f05e' \
+  -H 'cache-control: no-cache' \
+  -d '{
+"title" : "iphone",
+"seller":"john",
+"category":"12",
+"price":"99.00"
+}'
+
+```
+
+#### Rule Management Service 
+
+A management portal for defining rules needs to be developed and our webservice exposes a set of APIs which can perform the basic CRUD operations.The API accessibility is limited  only to authenticated users, clients will be invoking an authenticate API which sends a JWT token by looking up the user database(here we use preconfigured users for prototyping). Subsequent operations needs to pass this token in the AUTH header and service will grant access only if JWT token validation is succesfull. As mentioned above the rules will be stored in an inmemory H2 database and further synced to the inmemory cache.Any update/delete operation will trigger an eviciton from the cache, the idea is to remove stale data and reload the cache organically when eligiblity service makes the next rule evaluation.
+
+Database view 
+
+
+
+API : /authenticate
+
+Payload :
+```
+curl -X POST \
+  http://localhost:8080/authenticate \
+  -H 'Content-Type: application/json' \
+  -d '{ 
+"username":"rajeev",
+"password":"changeit"
+}'
+
+```
+Response : 
+
+```
+{
+    "token": "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyYWplZXYiLCJleHAiOjE2MjM3MDI1MzUsImlhdCI6MTYyMzY4NDUzNX0.jwq0FLpI-yMs5xHUNjETOjwIwQRE8x-5yR6VRPSCABAbHWUabco0UihYsIbf9ndYO--bEtrLu571Ev-xffRobg",
+    "ttl" : 120000
+}
+```
+
+#### Create rule 
+      
+   API : POST /v1/rules
+   Payload : 
+```
+curl -X POST \
+  http://localhost:8080/v1/rules \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyYWplZXYiLCJleHAiOjE2MjM2MjE2NjksImlhdCI6MTYyMzYwMzY2OX0.QaeSWTfDbgDjjOcXnIIm5do8CutKmBgNssM5xqwxWy80yJ06_EKaclkmQ3NejJC3_SXGdTM1fR6EYxF7o1dyGw' \
+  -H 'Content-Type: application/json' \
+  -d '{ 
+"rule":"shipping.program.approved.sellers",
+"value":"john,rajeev"
+}'
+```
+
+#### Update rule
+
+API : PUT /v1/rules/{{id}}
+
+Payload : 
+```
+curl -X PUT \
+  http://localhost:8080/v1/rules/1 \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyYWplZXYiLCJleHAiOjE2MjM2MjE2NjksImlhdCI6MTYyMzYwMzY2OX0.QaeSWTfDbgDjjOcXnIIm5do8CutKmBgNssM5xqwxWy80yJ06_EKaclkmQ3NejJC3_SXGdTM1fR6EYxF7o1dyGw' \
+  -H 'Content-Type: application/json' \
+  -d '{
+        "rule": "shipping.program.approved.sellers",
+        "value": "rajeev,john"
+    }'
+    
+```
+
+#### Delete rule
+
+API : DELETE /v1/rules/{{id}}
+
+Payload : 
+```
+curl -X DELETE \
+  http://localhost:8080/v1/rules/1 \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyYWplZXYiLCJleHAiOjE2MjM2MjE2NjksImlhdCI6MTYyMzYwMzY2OX0.QaeSWTfDbgDjjOcXnIIm5do8CutKmBgNssM5xqwxWy80yJ06_EKaclkmQ3NejJC3_SXGdTM1fR6EYxF7o1dyGw' \
+  -H 'Content-Type: application/json'
+
+```
+
+#### List rules
+
+API : GET /v1/rules
+
+Payload : 
+```
+curl -X GET \
+  http://localhost:8080/v1/rules/ \
+  -H 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyYWplZXYiLCJleHAiOjE2MjM2MjE2NjksImlhdCI6MTYyMzYwMzY2OX0.QaeSWTfDbgDjjOcXnIIm5do8CutKmBgNssM5xqwxWy80yJ06_EKaclkmQ3NejJC3_SXGdTM1fR6EYxF7o1dyGw' \
+  -H 'Content-Type: application/json'
+ ```
+ 
+
