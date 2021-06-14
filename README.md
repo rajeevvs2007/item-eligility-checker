@@ -240,7 +240,7 @@ Application needs to be optimized for read-intensive workloads, and below consid
 3. Uses HikariCP as a JDBC connection pool and correct setting of max pool ,idle pool and timeout will reduce ```getConnection()``` overheads.
 4. Uses Logback Async appenders for logging without blocking the main thread.
 5. Uses API key and JWT authenticaton mechanism which are light weight compared to OAUTH.
-6. Nice to have , we know the business rules wont change frequently and once the rule is evaluated for an item, we can instruct gateway to cache the response(use HTTP cache headers).Any change in rule should trigger a cache purge.
+6. Nice to have , we know the business rules wont change frequently and once the rule is evaluated for an item, we can instruct gateway to cache the response(use HTTP cache headers).Any change in rule should trigger a cache purge.This approach can improve our API's performance through reduced latency and network traffic.
 
 
 
@@ -248,5 +248,6 @@ Application needs to be optimized for read-intensive workloads, and below consid
 
 1. https://docs.spring.io
 2. https://github.com/brettwooldridge/HikariCP
+3. 
 
 
