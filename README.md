@@ -2,7 +2,7 @@
 
 
 # item-eligility-checker
-Demonstrates a RESTful web service using Spring Boot and Java. This webservice provides ability for an ecomm based organization to check if the product is eligible for a new shipping program, the eligiblity is determined by a set of preconfigured business rules. The webservice also support a admin portal where the rules can be created/edited by business users. Application make use of an inmemory database to store the rules and further save it in an inmemory cache for better throughput and minimize I/O.Security of the APIs are treated differently for eligibilty and rules endpoints , first one is secured by API key based auth and the later by a JWT based auth methodolgy. 
+Demonstrates a RESTful web service using Spring Boot and Java. This webservice provides ability for an ecomm based organization to check if the product is eligible for a new shipping program, the eligiblity is determined by a set of preconfigured business rules. The webservice also exposes APIs to support an admin portal where the rules can be created/edited by business users. Application make use of an inmemory database to store the rules and further save it in an inmemory cache for better throughput and minimize I/O.Security of the APIs are treated differently for eligibilty and rules endpoints , first one is secured by API key based auth and the later by a JWT based auth methodolgy. 
 
 ## Technology stack
       - Spring Boot 2.5.1.RELEASE (Modules - web,test,security,actuator,jpa)
@@ -241,6 +241,7 @@ Application needs to be optimized for read-intensive workloads, and below consid
 4. Uses Logback Async appenders for logging without blocking the main thread.
 5. Uses API key and JWT authenticaton mechanism which are light weight compared to OAUTH.
 6. Nice to have , we know the business rules wont change frequently and once the rule is evaluated for an item, we can instruct gateway to cache the response(use HTTP cache headers).Any change in rule should trigger a cache purge.This approach can improve our API's performance through reduced latency and network traffic.
+7. Nice to have, we can split this application to two individually deployable artifacts - rules and eligiblity services. This will give greater flexibilty to scale the eligiblity APIs without creating more connections to rule database(Only Rule APIs needs to interact with database directly).
 
 
 
@@ -248,6 +249,4 @@ Application needs to be optimized for read-intensive workloads, and below consid
 
 1. https://docs.spring.io
 2. https://github.com/brettwooldridge/HikariCP
-3. 
-
 
