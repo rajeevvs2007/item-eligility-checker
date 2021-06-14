@@ -43,7 +43,7 @@ Demonstrates a RESTful web service using Spring Boot and Java. This webservice p
 
 | HTTP Verb        | URL           | Description  | Status Codes |
 | ------------- |-------------|-----| ----|
-| `GET` | `http://localhost:8081/manage/health` |Shows application health information| <ul><li>`200 OK` if the system is avaialable and healthy</li><l1> `503 Internal Server Error` if the system is in error state</li></ul>|
+| `GET` | `http://localhost:8081/manage/health` |Shows application health information| <ul><li>`200 OK` if the system is avaialable and healthy</li> <l1>`503 Internal Server Error` if the system is in error state</li></ul>|
 | `GET` | `http://localhost:8081/manage/env` | Exposes properties from Spring’s ConfigurableEnvironment.| <ul><li>`200 OK` </li></ul> |
 | `GET` | `http://localhost:8081/manage/metrics` | Shows ‘metrics’ information for the current application.| <ul><li>`200 OK`</li></ul> |
 
