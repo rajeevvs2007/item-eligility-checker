@@ -8,6 +8,7 @@ import com.shipping.model.RuleRequest;
 import com.shipping.model.RuleResponse;
 import com.shipping.service.RegionalShippingRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,11 +20,7 @@ public class RegionalShippingRuleServiceImpl implements RegionalShippingRuleServ
     RuleDAO ruleDAO;
 
     @Autowired
-    ApplicationConfig config;
-
-
-    @Autowired
-    CacheServiceFactory cacheServiceFactory;
+    ApplicationCache cacheService;
 
     @Override
     public void save(RuleRequest rule) {
@@ -35,10 +32,9 @@ public class RegionalShippingRuleServiceImpl implements RegionalShippingRuleServ
     @Override
     public boolean update(RuleRequest rule) {
 
-        ApplicationCache cache = cacheServiceFactory.getCacheService(config.itemCacheStrategy);
         boolean ruleUpdated = ruleDAO.update(rule);
         //Perform cache removal for the specific key as the data is stale.
-        if (ruleUpdated) cache.remove(rule.getRule());
+        if (ruleUpdated) cacheService.remove(rule.getRule());
 
         return ruleUpdated;
 
@@ -59,6 +55,13 @@ public class RegionalShippingRuleServiceImpl implements RegionalShippingRuleServ
     @Override
     public void remove(long id) {
 
+
+        RuleResponse ruleResponse = findById(id);
+
         ruleDAO.remove(id);
+
+        if(ruleResponse.getKey() != null) cacheService.remove(ruleResponse.getKey());
+
     }
+
 }

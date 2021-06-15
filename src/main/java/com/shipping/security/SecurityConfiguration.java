@@ -18,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @Order(2)
-
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 
@@ -44,6 +43,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/authenticate").permitAll().anyRequest().authenticated()
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         getHttp().addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+
+
     }
 
     @Override
@@ -56,4 +58,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 }

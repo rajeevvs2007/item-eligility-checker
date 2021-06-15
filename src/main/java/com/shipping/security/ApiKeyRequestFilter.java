@@ -4,7 +4,6 @@ import com.shipping.config.ApplicationConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -49,5 +48,11 @@ public class ApiKeyRequestFilter extends OncePerRequestFilter {
     private String getApiKey(HttpServletRequest httpRequest) {
 
         return httpRequest.getHeader("X-API-KEY");
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return !path.startsWith("/v1/shipping/");
     }
 }

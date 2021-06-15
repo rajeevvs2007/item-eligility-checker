@@ -1,16 +1,24 @@
 package com.shipping.config;
 
+import com.shipping.cache.ApplicationCache;
+import com.shipping.cache.CacheServiceFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.security.authentication.AuthenticationManager;
 
 import java.util.List;
 
 @Configuration
-@PropertySource("classpath:application.properties")
+@PropertySources({
+        @PropertySource(value= "classpath:/application.properties", ignoreResourceNotFound = false ),
+        @PropertySource(value = "classpath:/application-${spring.profiles.active}.properties", ignoreResourceNotFound = true)
+})
 public class ApplicationConfig {
 
     @Value("${shipping.program.rules}")
@@ -36,6 +44,9 @@ public class ApplicationConfig {
 
     @Value("${apikey.auth.disabled}")
     public boolean apikeyAuthenticationDisabled;
+
+    @Autowired
+    CacheServiceFactory cacheServiceFactory;
 
     public String getValidApiKey() {
         return validApiKey;
@@ -109,6 +120,12 @@ public class ApplicationConfig {
         messageSource.setBasenames("classpath:api_error_messages");
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
+    }
+
+
+    @Bean
+    ApplicationCache cacheService() {
+        return cacheServiceFactory.getCacheService(this.itemCacheStrategy);
     }
 
 }

@@ -2,6 +2,7 @@ package com.shipping.model;
 
 
 import javax.validation.constraints.*;
+import java.util.Objects;
 
 public class EligibilityRequest {
 
@@ -13,6 +14,22 @@ public class EligibilityRequest {
 
     @PositiveOrZero
     private int category;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EligibilityRequest)) return false;
+        EligibilityRequest that = (EligibilityRequest) o;
+        return getCategory() == that.getCategory() &&
+                Double.compare(that.getPrice(), getPrice()) == 0 &&
+                Objects.equals(getTitle(), that.getTitle()) &&
+                Objects.equals(getSeller(), that.getSeller());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getTitle(), getSeller(), getCategory(), getPrice());
+    }
 
     @PositiveOrZero
     private double price;

@@ -9,6 +9,7 @@ import com.shipping.service.RegionalShippingRuleService;
 import com.shipping.service.impl.UserManagementService;
 import com.shipping.security.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -98,7 +99,7 @@ public class RegionalShippingRulesController {
 
         regionalShippingRuleService.remove(id);
 
-        return  new ResponseEntity<RuleResponse>(HttpStatus.OK);
+        return  new ResponseEntity<RuleResponse>(HttpStatus.NO_CONTENT);
     }
 
 }

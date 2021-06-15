@@ -4,7 +4,6 @@ import com.shipping.config.ApplicationConfig;
 import com.shipping.service.impl.UserManagementService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -93,6 +92,10 @@ public class JWTRequestFilter extends OncePerRequestFilter {
     }
 
 
-
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return !path.startsWith("/v1/rules");
+    }
 
 }

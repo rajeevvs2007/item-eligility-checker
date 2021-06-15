@@ -63,7 +63,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> details = new ArrayList<>();
         details.add(messageSource.getMessage(ShippingConstants.ERROR_MESSAGE_DUPLICATE_RECORD_FOUND,null,Locale.ENGLISH));
         ErrorResponse error = new ErrorResponse(ShippingConstants.ERROR_MESSAGE_DUPLICATE_RECORD_FOUND, details);
-        return new ResponseEntity<>(error, HttpStatus.OK);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoResultException.class)
@@ -72,7 +72,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> details = new ArrayList<>();
         details.add(ex.getMessage());
         ErrorResponse  error = new ErrorResponse(ShippingConstants.ERROR_CODE_NO_RECORD_FOUND, details);
-        return new ResponseEntity<>(error, HttpStatus.OK);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
