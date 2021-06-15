@@ -247,7 +247,7 @@ flexible to use an external cache mechanism if the rule configured uses large me
 5. Uses API key and JWT authenticaton mechanism which are light weight compared to OAUTH.
 6. Nice to have , we know the business rules wont change frequently and once the rule is evaluated for an item, we can instruct gateway to cache the response(use HTTP cache headers).Any change in rule should trigger a cache purge.This approach can improve our API's performance through reduced latency and network traffic.
 7. Nice to have, we can split this application to two individually deployable artifacts - rules and eligiblity services. This will give greater flexibilty to scale the eligiblity APIs without creating more connections to rule database(Only Rule APIs needs to interact with database directly).
-8. Nice to have, expose API to accept rule with larger memory requirements , for millions of approved sellers in the program.This needs a change in
+8. **Need to enhance** , expose API to accept rule with larger memory requirements , for eg:  millions of approved sellers in the program.This needs a change in
 storage requirements to use BLOB instead of varchar.
 
 
