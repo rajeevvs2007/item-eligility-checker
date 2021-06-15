@@ -12,7 +12,7 @@ public class EligibilityRequest {
     @NotEmpty(message = "validation.error.seller.empty")
     private String seller;
 
-    @PositiveOrZero
+    @PositiveOrZero(message = "validation.error.category.invalid")
     private int category;
 
     @Override
@@ -31,7 +31,7 @@ public class EligibilityRequest {
         return Objects.hash(getTitle(), getSeller(), getCategory(), getPrice());
     }
 
-    @PositiveOrZero
+    @PositiveOrZero(message = "validation.error.price.positiveorzero")
     private double price;
 
     public EligibilityRequest(String title, String seller, int category, double price) {
