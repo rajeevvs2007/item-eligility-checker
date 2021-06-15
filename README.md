@@ -103,10 +103,9 @@ Usage :
 ``` 
 curl -X POST \
   http://localhost:8080/v1/shipping/item/eligible \
-  -H 'Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJyYWplZXYiLCJleHAiOjE2MjM2MjE2NjksImlhdCI6MTYyMzYwMzY2OX0.QaeSWTfDbgDjjOcXnIIm5do8CutKmBgNssM5xqwxWy80yJ06_EKaclkmQ3NejJC3_SXGdTM1fR6EYxF7o1dyGw' \
   -H 'Content-Type: application/json' \
   -H 'Postman-Token: d6f79200-55c3-4b8e-951d-7b7b6a7f3265' \
-  -H 'X-API-KEY: aec093c2-c981-44f9-9a4a-365ad1d2f05e' \
+  -H 'X-API-KEY: 5751564c-d2f4-4d4e-9737-2948baa83f4a' \
   -H 'cache-control: no-cache' \
   -d '{
 "title" : "iphone",
