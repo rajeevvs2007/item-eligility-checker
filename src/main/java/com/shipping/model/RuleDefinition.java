@@ -21,6 +21,7 @@ public class RuleDefinition {
     @Column(unique=true)
     private String key;
 
+
     private String value;
 
     public RuleDefinition(Long id, String key, String value) {

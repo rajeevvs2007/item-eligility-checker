@@ -61,7 +61,7 @@ Demonstrates a RESTful web service using Spring Boot and Java. This webservice p
 1. Presence of distributed cloud computing components like Load balancers, API gateway and deployment orchestrator like kubernetes or openshift.
 2. Eligibility APIs are exposed to internal microservices and not exposed over the internet.
 3. Endpoint versioning done at the API gateway.
-4. At any point, no of active rules will not exceed 100.
+4. At any point, no of active rules will not exceed 100. 
 5. Packaged rules and eligibility APIs in a single container but it can be split if needed.
 6. Eligibilty service expects a high TPS and API gateway can enfore a rate limiter to prevent any accidental overload of the compute instance.
 
@@ -79,6 +79,9 @@ Tables
       | ID            |BIGINT NOT NULL|Yes|Yes|
       | key| VARCHAR(255)|No|Yes|
       | value|VARCHAR(255)|No|No|
+
+Here there is an assumption made that rule will have only 255 characters which in realty will be very less , to have this fixed we can use 
+**BLOB** storage instead of varchar.
 
 
 ### Deep dive
@@ -237,12 +240,15 @@ Added ```spring-boot-starter-test``` dependency to facilitate the unit test case
 #### Performance considerations
 
 Application needs to be optimized for read-intensive workloads, and below considerations are incorporated
-1. Uses Inmemory caching for frequently accessed data , rules in this scenario are frequently looked up and less frequently modified.
+1. Uses Inmemory caching for frequently accessed data , rules in this scenario are frequently looked up and less frequently modified.This design is
+flexible to use an external cache mechanism if the rule configured uses large memory eg:millions of approved sellers in the program,few thousands of categories.
 3. Uses HikariCP as a JDBC connection pool and correct setting of max pool ,idle pool and timeout will reduce ```getConnection()``` overheads.
 4. Uses Logback Async appenders for logging without blocking the main thread.
 5. Uses API key and JWT authenticaton mechanism which are light weight compared to OAUTH.
 6. Nice to have , we know the business rules wont change frequently and once the rule is evaluated for an item, we can instruct gateway to cache the response(use HTTP cache headers).Any change in rule should trigger a cache purge.This approach can improve our API's performance through reduced latency and network traffic.
 7. Nice to have, we can split this application to two individually deployable artifacts - rules and eligiblity services. This will give greater flexibilty to scale the eligiblity APIs without creating more connections to rule database(Only Rule APIs needs to interact with database directly).
+8. Nice to have, expose API to accept rule with larger memory requirements , for millions of approved sellers in the program.This needs a change in
+storage requirements to use BLOB instead of varchar.
 
 
 
