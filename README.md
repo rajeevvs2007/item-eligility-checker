@@ -250,4 +250,6 @@ Application needs to be optimized for read-intensive workloads, and below consid
 
 1. https://docs.spring.io
 2. https://github.com/brettwooldridge/HikariCP
+3. Postman collection - https://www.getpostman.com/collections/99ccedb1f098c4c9ab0b
+4. https://jwt.io/
 
