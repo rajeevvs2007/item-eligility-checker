@@ -97,6 +97,8 @@ This is the key component of the app, service evaluates the payload based on the
 The rules will be first looked up in the cache and if not present will be going to database , an inmemory cache and an inmemory H2 database is used to achieve this design.In production we need to replace the database with persistant databases like MySQL,Mongo etc but the cache can still be JVM based as we are not expecting a huge set of rules created.
 Since this service is consumed by other microservices, the authentication can be based on API-KEYs as it will make the process faster still securing access. A custom http filter is defined to intercept the request and perform the token validation and if valid, mark the request as authenticated, this in conjunction with a custom ```WebSecurityConfigurerAdapter``` will instruct spring security to inject the filter before the default ```UsernamePasswordAuthenticationFilter```.
 
+Please use X-API-KEY: 5751564c-d2f4-4d4e-9737-2948baa83f4a.
+
 API : v1/shipping/item/eligible
 
 Usage :  
